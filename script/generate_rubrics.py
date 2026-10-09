@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 import json
 import litellm
 import os
@@ -262,7 +263,10 @@ def retrieve_s2_snippet(query: str, limit: int = 10, retries: int = 2):
 # --------------- Web search API ---------------
 def serper_search(query):
     try:
-        conn = http.client.HTTPSConnection("google.serper.dev", timeout=20)
+        serper_url = urlparse(os.getenv("SERPER_BASE_URL", "https://google.serper.dev"))
+        conn = (
+            http.client.HTTPConnection if serper_url.scheme == "http" else http.client.HTTPSConnection
+        )(serper_url.netloc, timeout=20)
         key = os.getenv("SERPER_API_KEY")
         if not key:
             return []
@@ -271,7 +275,7 @@ def serper_search(query):
         headers = {"X-API-KEY": key, "Content-Type": "application/json"}
 
         def _once():
-            conn.request("POST", "/search", payload, headers)
+            conn.request("POST", f"{serper_url.path.rstrip('/')}/search", payload, headers)
             res = conn.getresponse()
             data = res.read()
             return res.status, data

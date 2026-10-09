@@ -112,15 +112,13 @@ def search_serper(
         - relatedSearches: Optional list of related search queries
     """
     if not api_key:
-        import os
-
         api_key = os.getenv("SERPER_API_KEY")
         if not api_key:
             raise ValueError(
                 "SERPER_API_KEY environment variable is not set or api_key parameter not provided"
             )
 
-    url = "https://google.serper.dev/search"
+    url = f'{os.getenv("SERPER_BASE_URL", "https://google.serper.dev").rstrip("/")}/search'
 
     payload = json.dumps({"q": query, "num": num_results, "gl": gl, "hl": hl, "type": search_type})
 
@@ -165,15 +163,13 @@ def search_serper_scholar(
             - citedBy: Number of citations
     """
     if not api_key:
-        import os
-
         api_key = os.getenv("SERPER_API_KEY")
         if not api_key:
             raise ValueError(
                 "SERPER_API_KEY environment variable is not set or api_key parameter not provided"
             )
 
-    url = "https://google.serper.dev/scholar"
+    url = f'{os.getenv("SERPER_BASE_URL", "https://google.serper.dev").rstrip("/")}/scholar'
 
     payload = json.dumps({"q": query, "num": num_results})
 
